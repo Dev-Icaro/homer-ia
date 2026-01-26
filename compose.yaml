@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    env_file:
+      - .env.production
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=homer-ia
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/db-password
+      - MONGO_INITDB_DATABASE=homer-ia
+    volumes:
+      - mongodb_data:/data/db
+      - ./db-init:/docker-entrypoint-initdb.d:ro
+    secrets:
+      - db-password
+
+volumes:
+  mongodb_data:
+
+secrets:
+  db-password:
+    file: ./secrets/db-password.txt
