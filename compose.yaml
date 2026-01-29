@@ -8,7 +8,7 @@ services:
     ports:
       - "27017:27017"
     env_file:
-      - .env.production
+      - .env
     environment:
       - MONGO_INITDB_ROOT_USERNAME=homer-ia
       - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/db-password
@@ -19,8 +19,32 @@ services:
     secrets:
       - db-password
 
+  waha:
+    image: devlikeapro/waha:latest
+    container_name: waha
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - WAHA_LOG_FORMAT=JSON
+      - WAHA_LOG_LEVEL=info
+      - WAHA_PRINT_QR=true
+      - WAHA_SESSION_STORE=file
+      - WHATSAPP_HOOK_URL=http://api:8000/waha/webhook
+      - WHATSAPP_HOOK_EVENTS=message,state.change
+      - WHATSAPP_HOOK_RETRIES_ATTEMPTS=4
+      - WHATSAPP_HOOK_RETRIES_DELAY_SECONDS=3
+      - WAHA_DASHBOARD_USERNAME=homer-ia
+      - WHATSAPP_SWAGGER_USERNAME=homer-ia
+      - WAHA_DASHBOARD_PASSWORD=44c463bfe6a1485b8cb60ea18dc897b6
+      - WHATSAPP_SWAGGER_PASSWORD=44c463bfe6a1485b8cb60ea18dc897b6
+      - WAHA_API_KEY=admin
+    volumes:
+      - waha_data:/app/sessions
+
 volumes:
   mongodb_data:
+  waha_data:
 
 secrets:
   db-password:
