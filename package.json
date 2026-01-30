@@ -10,13 +10,15 @@
     "typescript": "^5"
   },
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
-    "start": "bun run src/index.ts --env-file .env.production"
+    "dev": "bun run --hot src/server.ts --env-file .env.development",
+    "start": "bun run src/server.ts --env-file .env.production"
   },
   "dependencies": {
     "@langchain/core": "^1.1.16",
     "@langchain/groq": "^1.0.3",
     "@langchain/openai": "^1.2.3",
-    "langchain": "^1.2.12"
+    "elysia": "^1.4.22",
+    "langchain": "^1.2.12",
+    "mongodb": "^7.0.0"
   }
 }

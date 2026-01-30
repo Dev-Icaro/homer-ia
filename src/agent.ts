@@ -24,16 +24,7 @@ const agent = createAgent({
   model,
   systemPrompt,
   checkpointer,
-  tools: [addTaskTool],
+  tools: [],
 });
 
-const config = {
-  configurable: { thread_id: "1" },
-  context: { user_id: "1" },
-};
-
-const response = await agent.invoke(
-  { messages: [{ role: "user", content: "Adicione a tarefa 'Comprar leite' à lista de casa" }] },
-  config
-);
-console.log(response);
+export default agent;
