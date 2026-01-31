@@ -1,30 +1,29 @@
-import { tool, initChatModel, createAgent } from 'langchain';
+import { initChatModel, createAgent } from 'langchain';
 import { MemorySaver } from '@langchain/langgraph';
-import { z } from 'zod';
+import { createListTool, getAllListsTool } from './tools/list';
+import fs from "node:fs";
+import { fileURLToPath } from "node:url";
 
 const checkpointer = new MemorySaver();
 
-const systemPrompt = `
-  Você é um assistente de IA que ajuda a gerenciar itens de casa
-`;
+const promptPath = fileURLToPath(
+  new URL("./prompts/system-prompt.md", import.meta.url),
+);
+const systemPrompt = fs.readFileSync(promptPath, "utf8");
 
-const addTaskTool = tool((input) => console.log(input), {
-  name: 'add_task',
-  description: 'Adiciona uma tarefa a lista de casa',
-  schema: z.object({
-    task: z.string().describe('A tarefa a ser adicionada'),
-  }),
-});
+// const model = await initChatModel('llama-3.1-8b-instant', {
+//   modelProvider: 'groq',
+// });
 
-const model = await initChatModel('llama-3.1-8b-instant', {
-  modelProvider: 'groq',
+const model = await initChatModel('gpt-5-nano', {
+  modelProvider: 'openai',
 });
 
 const agent = createAgent({
   model,
   systemPrompt,
   checkpointer,
-  tools: [],
+  tools: [createListTool, getAllListsTool],
 });
 
 export default agent;

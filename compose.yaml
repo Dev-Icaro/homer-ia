@@ -31,7 +31,7 @@ services:
       - WAHA_PRINT_QR=true
       - WAHA_SESSION_STORE=file
       - WHATSAPP_HOOK_URL=http://host.docker.internal:3001/waha/webhook
-      - WHATSAPP_HOOK_EVENTS=message,message.any,state.change
+      - WHATSAPP_HOOK_EVENTS=message,state.change
       - WHATSAPP_HOOK_RETRIES_ATTEMPTS=4
       - WHATSAPP_HOOK_RETRIES_DELAY_SECONDS=3
       - WAHA_DASHBOARD_USERNAME=homer-ia
