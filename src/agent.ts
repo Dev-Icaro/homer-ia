@@ -11,13 +11,9 @@ const promptPath = fileURLToPath(
 );
 const systemPrompt = fs.readFileSync(promptPath, "utf8");
 
-// const model = await initChatModel('llama-3.1-8b-instant', {
-//   modelProvider: 'groq',
-// });
-
-const model = await initChatModel('gpt-4o-mini', {
+const model = await initChatModel('gpt-5-nano', {
   modelProvider: 'openai',
-  temperature: 0.7,
+  temperature: 1,
 });
 
 const agent = createAgent({
