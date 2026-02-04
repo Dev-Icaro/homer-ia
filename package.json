@@ -10,7 +10,7 @@
     "typescript": "^5"
   },
   "scripts": {
-    "dev": "bun run --hot src/server.ts --env-file .env.development",
+    "dev": "bun run --hot --inspect src/server.ts --env-file .env.development",
     "start": "bun run src/server.ts --env-file .env.production"
   },
   "dependencies": {
