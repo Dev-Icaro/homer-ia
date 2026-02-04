@@ -6,6 +6,7 @@ import "@/config/secrets";
 import { mongoPlugin } from "./plugins/mongoPlugin";
 import { requestLogger } from "@/plugins/requestLogger";
 import logger from "./utils/logger";
+import { errorHandler } from "./plugins/errorHandler";
 
 type WahaWebhookBody = {
   event?: string;
@@ -19,6 +20,7 @@ const port = env.APP_PORT;
 
 export const app = new Elysia()
   .use(requestLogger)
+  .use(errorHandler)
   .use(mongoPlugin)
   .get("/", () => ({
     success: true,
@@ -30,7 +32,7 @@ export const app = new Elysia()
   })
   .post("/waha/webhook", async ({ body }) => {
     const webhookBody = body as WahaWebhookBody;
-
+    
     if (webhookBody.event === "message") {
       const payload = webhookBody.payload;
 
@@ -41,25 +43,20 @@ export const app = new Elysia()
 
       if (payload?.body && payload.body.trim().length > 0) {
         logger.info(`Invoking agent for message: ${payload.body}`);
-        try {
-          const response = await agent.invoke(
-            { messages: [{ role: "user", content: payload.body }] },
-            config,
-          );
-  
-          const lastMessage = response.messages.at(-1);
-          const replyText = String(lastMessage?.content);
-          const chatId = payload.from;
-  
-          if (chatId && replyText.trim().length > 0) {
-            await sendTextMessage({
-              chatId,
-              text: replyText.trim(),
-            });
-          }
-        } catch (error) {
-          console.log(error);
-          logger.error(`Error invoking agent: ${error}`);
+        const response = await agent.invoke(
+          { messages: [{ role: "user", content: payload.body }] },
+          config,
+        );
+
+        const lastMessage = response.messages.at(-1);
+        const replyText = String(lastMessage?.content);
+        const chatId = payload.from;
+
+        if (chatId && replyText.trim().length > 0) {
+          await sendTextMessage({
+            chatId,
+            text: replyText.trim(),
+          });
         }
       }
     }

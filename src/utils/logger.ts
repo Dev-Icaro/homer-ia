@@ -32,13 +32,14 @@ addColors(customLevels.colors);
 const logger = createLogger({
   levels: customLevels.levels,
   format: format.combine(
+    format.errors({ stack: true }),
     format(info => ({ ...info, level: info.level.toUpperCase() }))(),
     format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     format.printf(
-      ({ timestamp, level, message }) =>
+      ({ timestamp, level, message, stack }) =>
         `[${level}] - ${timestamp} - ${getReqId() || 'SYSTEM'} - ${
           getRequestContext()?.userId || '#'
-        }: ${message}`,
+        }: ${stack || message}`,
     ),
   ),
   transports: [
@@ -61,14 +62,15 @@ if (process.env.NODE_ENV !== 'production') {
       silent: process.env.LOG_SILENT === 'true',
       level: process.env.LOG_LEVEL || 'info',
       format: format.combine(
+        format.errors({ stack: true }),
         format(info => ({ ...info, level: info.level.toUpperCase() }))(),
         format.colorize(),
         format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         format.printf(
-          ({ timestamp, level, message }) =>
+          ({ timestamp, level, message, stack }) =>
             `[${level}] - ${timestamp} - ${getReqId() || 'SYSTEM'} - ${
               getRequestContext()?.userId || '#'
-            }: ${message}`,
+            }: ${stack || message}`,
         ),
       ),
     }),
