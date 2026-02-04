@@ -28,43 +28,42 @@ export const app = new Elysia()
     await db.command({ ping: 1 });
     return { success: true, message: "Healthy" };
   })
-  .post('/waha/webhook', async ({ body }) => {
+  .post("/waha/webhook", async ({ body }) => {
     const webhookBody = body as WahaWebhookBody;
-    
-    if (webhookBody.event === 'message') {
+
+    if (webhookBody.event === "message") {
       const payload = webhookBody.payload;
+
       const config = {
         configurable: { thread_id: "1" },
         context: { user_id: "1" },
       };
-      
+
       if (payload?.body && payload.body.trim().length > 0) {
         logger.info(`Invoking agent for message: ${payload.body}`);
-        const response = await agent.invoke(
-          { messages: [{ role: "user", content: payload.body }] },
-          config
-        );
+        try {
+          const response = await agent.invoke(
+            { messages: [{ role: "user", content: payload.body }] },
+            config,
+          );
   
-        const lastMessage = Array.isArray(response?.messages)
-          ? (response.messages.at(-1) as { content?: unknown } | undefined)
-          : undefined;
-        const replyRaw =
-          lastMessage?.content ??
-          (response as { content?: unknown } | undefined)?.content ??
-          response;
-        const replyText =
-          typeof replyRaw === "string" ? replyRaw : String(replyRaw ?? "");
-        const chatId = payload.from;
+          const lastMessage = response.messages.at(-1);
+          const replyText = String(lastMessage?.content);
+          const chatId = payload.from;
   
-        if (chatId && replyText.trim().length > 0) {
-          await sendTextMessage({
-            chatId,
-            text: replyText.trim(),
-          });
+          if (chatId && replyText.trim().length > 0) {
+            await sendTextMessage({
+              chatId,
+              text: replyText.trim(),
+            });
+          }
+        } catch (error) {
+          console.log(error);
+          logger.error(`Error invoking agent: ${error}`);
         }
       }
     }
-    
+
     return {
       success: true,
       message: "Webhook received",
@@ -73,6 +72,3 @@ export const app = new Elysia()
   .listen(port, () => {
     logger.info(`Server is running at http://localhost:${port}`);
   });
-
-
-

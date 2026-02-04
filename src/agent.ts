@@ -1,6 +1,6 @@
 import { initChatModel, createAgent } from 'langchain';
 import { MemorySaver } from '@langchain/langgraph';
-import { createListTool, getAllListsTool } from './tools/list';
+import { createListTool, deleteListTool, getAllListsTool } from './tools/list';
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
@@ -15,15 +15,16 @@ const systemPrompt = fs.readFileSync(promptPath, "utf8");
 //   modelProvider: 'groq',
 // });
 
-const model = await initChatModel('gpt-5-nano', {
+const model = await initChatModel('gpt-4o-mini', {
   modelProvider: 'openai',
+  temperature: 0.7,
 });
 
 const agent = createAgent({
   model,
   systemPrompt,
   checkpointer,
-  tools: [createListTool, getAllListsTool],
+  tools: [createListTool, getAllListsTool, deleteListTool],
 });
 
 export default agent;

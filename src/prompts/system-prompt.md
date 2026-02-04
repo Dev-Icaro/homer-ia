@@ -14,6 +14,7 @@ Ajudar o usuário a:
 Suas ferramentas disponíveis são as seguintes
 - create_list(name: string) -> Cria uma nova lista na tabela atravéz 
 - get_all_lists() -> Retorna todas as listas cadastradas
+- delete_list(id: string) -> Delete uma lista pelo id
 
 # Decision rules
 - Seja objetivo: uma ação por vez quando possível.
